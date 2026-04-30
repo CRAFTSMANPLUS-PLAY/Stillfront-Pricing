@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRAFTSMAN+ — Stillfront Pricing</title>
+<title>CRAFTSMAN+ — Stillfront Value Calculator</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -12,29 +12,43 @@
     --surface2: #1c1c1c; --border: #2a2a2a; --green: #5aad3a;
   }
   html, body { background: var(--black); color: var(--white); font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
   nav { position: sticky; top: 0; z-index: 100; background: var(--black); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 56px; }
-  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  
-  
+  .nav-logo { display: flex; align-items: center; text-decoration: none; }
   .nav-right { display: flex; align-items: center; gap: 20px; }
   .nav-tag { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); }
   .nav-pill { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--black); background: var(--orange); padding: 6px 14px; border-radius: 100px; white-space: nowrap; }
-  
-  
-  .hero { padding: 3.5rem 2rem 1.5rem; max-width: 860px; margin: 0 auto; }
-  .hero-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); margin-bottom: 1rem; }
-  .hero-title { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; color: var(--white); margin-bottom: 0.75rem; }
+
+  .tabs { max-width: 860px; margin: 0 auto; padding: 0 2rem; display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-top: 1.5rem; }
+  .tab { font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid); padding: 10px 20px; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s; }
+  .tab:hover { color: var(--white); }
+  .tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+
+  .hero { padding: 2.5rem 2rem 1.5rem; max-width: 860px; margin: 0 auto; }
+  .hero-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.75rem; }
+  .hero-title { font-size: clamp(1.8rem, 4vw, 2.75rem); font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; color: var(--white); margin-bottom: 0.6rem; }
   .hero-title span { color: var(--orange); }
   .hero-sub { font-size: 14px; color: var(--mid); line-height: 1.6; }
+
   .content { max-width: 860px; margin: 0 auto; padding: 0 2rem 4rem; }
-  .section-label { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); margin-bottom: 14px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .section-label { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); margin-bottom: 14px; margin-top: 1.5rem; }
+  .section-label:first-child { margin-top: 0; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
   .card-accent { border-top: 2px solid var(--orange); }
-  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.5rem; }
+
+  .stat-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
   .stat-box { background: var(--surface2); border-radius: 8px; padding: 1rem; }
-  .stat-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+  .stat-box.hl { border: 1px solid var(--orange); background: rgba(250,108,0,0.06); }
+  .stat-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); margin-bottom: 4px; }
   .stat-num { font-size: 26px; font-weight: 800; letter-spacing: -0.03em; color: var(--white); }
   .stat-num.o { color: var(--orange); }
+  .stat-num.g { color: var(--green); }
+  .stat-sub { font-size: 11px; color: var(--mid); margin-top: 4px; line-height: 1.4; }
+
   .trow { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; gap: 8px; }
   .trow:last-child { border-bottom: none; }
   .trow .lbl { color: var(--mid); flex: 1; }
@@ -44,33 +58,51 @@
   .trow .val.g { color: var(--green); }
   .trow.active { background: rgba(250,108,0,0.08); border-radius: 6px; padding: 10px 10px; margin: 0 -10px; }
   .trow.active .val { color: var(--orange); }
-  hr { border: none; border-top: 1px solid var(--border); margin: 1.75rem 0; }
+
+  hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
   .slider-row { display: flex; align-items: center; gap: 16px; margin-bottom: 1.25rem; }
   .slider-side { font-size: 12px; color: var(--mid); white-space: nowrap; min-width: 44px; }
   .slider-val { font-size: 16px; font-weight: 800; color: var(--orange); min-width: 100px; text-align: right; letter-spacing: -0.02em; }
   input[type=range] { flex: 1; -webkit-appearance: none; appearance: none; height: 3px; border-radius: 2px; background: var(--border); outline: none; cursor: pointer; }
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--orange); cursor: pointer; border: 3px solid var(--black); box-shadow: 0 0 0 1.5px var(--orange); }
   input[type=range]::-moz-range-thumb { width: 22px; height: 22px; border-radius: 50%; background: var(--orange); cursor: pointer; border: 3px solid var(--black); }
-  .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1.25rem; }
-  .result-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; }
-  .result-card.hl { border: 1.5px solid var(--orange); background: rgba(250,108,0,0.06); }
-  .result-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--mid); margin-bottom: 8px; }
-  .result-num { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; color: var(--white); }
-  .result-num.o { color: var(--orange); }
-  .result-num.g { color: var(--green); }
-  .result-sub { font-size: 11px; color: var(--mid); margin-top: 4px; }
+
+  .roi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 1rem; }
+  .roi-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 1.1rem 1.25rem; }
+  .roi-card.hl { border-color: var(--green); background: rgba(90,173,58,0.05); }
+  .roi-card.ol { border-color: var(--orange); background: rgba(250,108,0,0.05); }
+  .roi-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mid); margin-bottom: 6px; }
+  .roi-num { font-size: 28px; font-weight: 800; letter-spacing: -0.03em; color: var(--white); margin-bottom: 4px; }
+  .roi-num.o { color: var(--orange); }
+  .roi-num.g { color: var(--green); }
+  .roi-sub { font-size: 11px; color: var(--mid); line-height: 1.5; }
+
   .bar-track { height: 4px; border-radius: 2px; background: var(--border); margin: 1rem 0 6px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 2px; background: var(--green); transition: width 0.2s ease; }
   .bar-labels { display: flex; justify-content: space-between; font-size: 10px; color: var(--mid); }
   .bar-labels .mid { font-weight: 700; color: var(--green); }
   .slider-note { font-size: 11px; color: var(--mid); font-style: italic; margin-top: 1rem; min-height: 15px; }
-  .note { font-size: 11px; color: #555; line-height: 1.6; margin-top: 1rem; }
+
+  .value-meter { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+  .meter-label { font-size: 11px; color: var(--mid); margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .meter-track { height: 10px; background: var(--border); border-radius: 5px; overflow: hidden; margin-bottom: 6px; }
+  .meter-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--orange), var(--green)); transition: width 0.3s ease; }
+  .meter-legend { display: flex; justify-content: space-between; font-size: 10px; color: var(--mid); }
+
+  .callout { background: rgba(250,108,0,0.07); border: 1px solid rgba(250,108,0,0.25); border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1rem; font-size: 13px; color: var(--white); line-height: 1.6; }
+  .callout strong { color: var(--orange); }
+
+  .note { font-size: 11px; color: #555; line-height: 1.6; margin-top: 0.75rem; }
+
   footer { border-top: 1px solid var(--border); padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--mid); }
   footer a { color: var(--orange); text-decoration: none; }
+
   @media (max-width: 580px) {
     nav { padding: 0 1rem; } .hero, .content { padding-left: 1rem; padding-right: 1rem; }
-    .stat-grid, .result-grid { grid-template-columns: 1fr 1fr; }
-    .stat-grid .stat-box:last-child, .result-grid .result-card:last-child { grid-column: 1 / -1; }
+    .stat-grid-3 { grid-template-columns: 1fr 1fr; }
+    .stat-grid-3 .stat-box:last-child { grid-column: 1 / -1; }
+    .roi-grid { grid-template-columns: 1fr; }
     .nav-tag { display: none; }
   }
 </style>
@@ -83,73 +115,218 @@
   </a>
   <div class="nav-right">
     <span class="nav-tag">Stillfront Group &nbsp;·&nbsp; Renewal 2026</span>
-    <span class="nav-pill">Pricing</span>
+    <span class="nav-pill">Value Calculator</span>
   </div>
 </nav>
 
-
-
-<div class="hero">
-  <p class="hero-eyebrow">Pricing Calculator</p>
-  <h1 class="hero-title">Find the right<br><span>seat structure.</span></h1>
-  <p class="hero-sub">See what you're paying today vs. what a right-sized deal looks like. Drag to explore.</p>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('roi')">ROI &amp; Value</div>
+  <div class="tab" onclick="switchTab('pricing')">Pricing &amp; Seats</div>
 </div>
 
-<div class="content">
-  <p class="section-label">Current deal — what you're paying</p>
-  <div class="card card-accent">
-    <div class="stat-grid">
-      <div class="stat-box"><div class="stat-lbl">Annual contract</div><div class="stat-num o">$144,000</div></div>
-      <div class="stat-box"><div class="stat-lbl">Seat structure</div><div class="stat-num">Unlimited</div></div>
-      <div class="stat-box"><div class="stat-lbl">Monthly rate</div><div class="stat-num">$12,000</div></div>
-    </div>
-    <p class="section-label">Effective cost per seat — at $144k annual</p>
-    <div class="trow"><span class="lbl">Using 5 seats</span><span class="val">$28,800 / seat / yr</span></div>
-    <div class="trow"><span class="lbl">Using 10 seats</span><span class="val">$14,400 / seat / yr</span></div>
-    <div class="trow"><span class="lbl">Using 15 seats (target)</span><span class="val o">$9,600 / seat / yr</span></div>
-    <div class="trow"><span class="lbl">Using 20 seats</span><span class="val">$7,200 / seat / yr</span></div>
-    <div class="trow"><span class="lbl">Using 30 seats</span><span class="val g">$4,800 / seat / yr</span></div>
-    <p class="note">The more teams that use PLAY under the unlimited deal, the lower the effective cost per seat — with zero additional spend. Every new user added costs $0 extra.</p>
+<!-- ROI PANEL -->
+<div id="panel-roi" class="panel active">
+  <div class="hero">
+    <p class="hero-eyebrow">Return on Investment</p>
+    <h1 class="hero-title">What your<br><span>$144k delivered.</span></h1>
+    <p class="hero-sub">5 months of verified platform usage. Dec 2025 – Apr 2026. All figures sourced from weekly usage reports and positioned against the full $144k annual contract value.</p>
   </div>
 
-  <hr>
+  <div class="content">
 
-  <p class="section-label">Build your package — drag to explore</p>
-  <div class="card">
-    <div class="slider-row">
-      <span class="slider-side">Seats</span>
-      <input type="range" min="1" max="11" step="1" value="10" id="seat-slider">
-      <span class="slider-val" id="seat-label">10 seats</span>
+    <div class="callout">
+      <strong>Positioning note:</strong> The numbers below reflect actual output from the first 5 months of the contract, measured against the full <strong>$144,000 annual investment</strong>. Even at partial-year output, the per-unit costs are a fraction of agency rates — and the pace is accelerating.
     </div>
-    <div class="result-grid">
-      <div class="result-card hl">
-        <div class="result-lbl">Monthly cost</div>
-        <div class="result-num o" id="monthly-cost">$10,250</div>
-        <div class="result-sub" id="monthly-sub">10 seats</div>
+
+    <p class="section-label">Production output — 5 months actual</p>
+    <div class="roi-grid">
+      <div class="roi-card ol">
+        <div class="roi-lbl">Cost per ad created</div>
+        <div class="roi-num o">$758</div>
+        <div class="roi-sub">$144k ÷ 190 PLAY ads (5-month actual)<br>Agency rate: $2k–$5k per playable</div>
       </div>
-      <div class="result-card">
-        <div class="result-lbl">Annual total</div>
-        <div class="result-num" id="annual-cost">$123,000</div>
-        <div class="result-sub" id="annual-sub">vs. $144k current</div>
+      <div class="roi-card ol">
+        <div class="roi-lbl">Cost per export</div>
+        <div class="roi-num o">$179</div>
+        <div class="roi-sub">$144k ÷ 804 exports (5-month actual)<br>Each = production-ready asset to ad network</div>
       </div>
-      <div class="result-card">
-        <div class="result-lbl">Cost per seat / yr</div>
-        <div class="result-num g" id="cps-result">$12,300</div>
-        <div class="result-sub" id="cps-sub">$1,025 / seat / mo</div>
+      <div class="roi-card">
+        <div class="roi-lbl">Platforms per export</div>
+        <div class="roi-num">20+</div>
+        <div class="roi-sub">One creative → 20+ ad networks<br>Agency charges per platform deliverable</div>
+      </div>
+      <div class="roi-card">
+        <div class="roi-lbl">Platform availability</div>
+        <div class="roi-num">18/20</div>
+        <div class="roi-sub">Active weeks (Stillfront) · 90% utilisation<br>Embedded into production workflow</div>
       </div>
     </div>
-    <div class="bar-track"><div class="bar-fill" id="savings-fill" style="width:54%;"></div></div>
-    <div class="bar-labels">
-      <span>$0 saved</span>
-      <span class="mid" id="savings-label">Saving $21,000/yr vs. current</span>
-      <span>$39k saved</span>
+
+    <hr>
+
+    <p class="section-label">Annualised projections — at 5-month pace</p>
+    <div class="roi-grid">
+      <div class="roi-card hl">
+        <div class="roi-lbl">Projected ads / year</div>
+        <div class="roi-num g">456</div>
+        <div class="roi-sub">At current output pace<br>Cost per ad: <strong style="color:var(--green)">$316</strong> vs. $2k–$5k agency</div>
+      </div>
+      <div class="roi-card hl">
+        <div class="roi-lbl">Projected exports / year</div>
+        <div class="roi-num g">1,930</div>
+        <div class="roi-sub">At current output pace<br>Cost per export: <strong style="color:var(--green)">$75</strong> vs. $200–$500 agency</div>
+      </div>
     </div>
-    <p class="slider-note" id="slider-note">Option A — Recommended. Covers the art hub + buffer. Full AI suite included.</p>
+
+    <hr>
+
+    <p class="section-label">Value breakdown — $144k annual contract</p>
+    <div class="roi-grid">
+      <div class="roi-card hl">
+        <div class="roi-lbl">Seat license value included</div>
+        <div class="roi-num g">$36,500</div>
+        <div class="roi-sub">31 seats at standard list rates<br>Covered inside the $144k — not additive</div>
+      </div>
+      <div class="roi-card">
+        <div class="roi-lbl">Remaining platform cost</div>
+        <div class="roi-num">$107,500</div>
+        <div class="roi-sub">$144k − $36,500 seat value<br>Covers all usage, exports, ads + AI access</div>
+      </div>
+      <div class="roi-card hl">
+        <div class="roi-lbl">Playable savings vs market</div>
+        <div class="roi-num g">$20,000+</div>
+        <div class="roi-sub">$1k vs $3k agency rate · 2 included/mo<br>$2k saved × 10 months in period</div>
+      </div>
+      <div class="roi-card hl">
+        <div class="roi-lbl">Total hard value vs $144k paid</div>
+        <div class="roi-num g">$56,500</div>
+        <div class="roi-sub">$36,500 seats + $20,000 savings<br>39¢ of every dollar returned in hard value</div>
+      </div>
+    </div>
+
+    <div class="value-meter">
+      <div class="meter-label">
+        <span>Hard value return on $144k investment (Year 1, 5-month actuals)</span>
+        <span style="color:var(--green);font-weight:700;">39% direct value return</span>
+      </div>
+      <div class="meter-track">
+        <div class="meter-fill" style="width:39%;"></div>
+      </div>
+      <div class="meter-legend">
+        <span>$0</span>
+        <span>$56,500 returned</span>
+        <span>$144,000 invested</span>
+      </div>
+    </div>
+
+    <hr>
+
+    <p class="section-label">Agency cost comparison — full contract basis</p>
+    <div class="card">
+      <div class="trow"><span class="lbl">190 ads at agency rate ($5k avg)</span><span class="val">$950,000</span></div>
+      <div class="trow"><span class="lbl">190 ads at CRAFTSMAN+ rate ($144k)</span><span class="val o">$144,000</span></div>
+      <div class="trow"><span class="lbl">Savings vs. agency (ads)</span><span class="val g">$806,000+</span></div>
+      <div class="trow"><span class="lbl">804 exports at agency rate ($300 avg)</span><span class="val">$241,200</span></div>
+      <div class="trow"><span class="lbl">804 exports at CRAFTSMAN+ rate</span><span class="val o">$144,000</span></div>
+      <div class="trow"><span class="lbl">Savings vs. agency (exports)</span><span class="val g">$97,200+</span></div>
+    </div>
+    <p class="note">Agency comparisons based on standard market rates for playable ad production. All output figures sourced from verified weekly PLAY usage reports (Dec 8, 2025 – Apr 20, 2026).</p>
+
+  </div>
+</div>
+
+<!-- PRICING PANEL -->
+<div id="panel-pricing" class="panel">
+  <div class="hero">
+    <p class="hero-eyebrow">Pricing Calculator</p>
+    <h1 class="hero-title">Find the right<br><span>seat structure.</span></h1>
+    <p class="hero-sub">See what you're paying today vs. what a right-sized deal looks like. Drag to explore — ROI metrics update in real time against the new contract value.</p>
   </div>
 
-  <p class="section-label">Full pricing reference</p>
-  <div class="card">
-    <div id="pricing-table"></div>
+  <div class="content">
+    <p class="section-label">Current deal — what you're paying</p>
+    <div class="card card-accent">
+      <div class="stat-grid-3">
+        <div class="stat-box"><div class="stat-lbl">Annual contract</div><div class="stat-num o">$144,000</div></div>
+        <div class="stat-box"><div class="stat-lbl">Seat structure</div><div class="stat-num">Unlimited</div></div>
+        <div class="stat-box"><div class="stat-lbl">Monthly rate</div><div class="stat-num">$12,000</div></div>
+      </div>
+      <p class="section-label">Effective cost per seat — at $144k annual</p>
+      <div class="trow"><span class="lbl">Using 5 seats</span><span class="val">$28,800 / seat / yr</span></div>
+      <div class="trow"><span class="lbl">Using 10 seats</span><span class="val">$14,400 / seat / yr</span></div>
+      <div class="trow"><span class="lbl">Using 15 seats (target)</span><span class="val o">$9,600 / seat / yr</span></div>
+      <div class="trow"><span class="lbl">Using 20 seats</span><span class="val">$7,200 / seat / yr</span></div>
+      <div class="trow"><span class="lbl">Using 30 seats</span><span class="val g">$4,800 / seat / yr</span></div>
+      <p class="note">The more teams that use PLAY under unlimited, the lower the effective cost per seat — with zero additional spend.</p>
+    </div>
+
+    <hr>
+
+    <p class="section-label">Build your package — drag to explore</p>
+    <div class="card">
+      <div class="slider-row">
+        <span class="slider-side">Seats</span>
+        <input type="range" min="1" max="11" step="1" value="10" id="seat-slider">
+        <span class="slider-val" id="seat-label">10 seats</span>
+      </div>
+      <div class="stat-grid-3">
+        <div class="stat-box hl">
+          <div class="stat-lbl">Monthly cost</div>
+          <div class="stat-num o" id="monthly-cost">$10,250</div>
+          <div class="stat-sub" id="monthly-sub">10 seats</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-lbl">Annual total</div>
+          <div class="stat-num" id="annual-cost">$123,000</div>
+          <div class="stat-sub" id="annual-sub">Saves $21k vs. current</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-lbl">Cost per seat / yr</div>
+          <div class="stat-num g" id="cps-result">$12,300</div>
+          <div class="stat-sub" id="cps-sub">$1,025 / seat / mo</div>
+        </div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" id="savings-fill" style="width:54%;"></div></div>
+      <div class="bar-labels">
+        <span>$0 saved</span>
+        <span class="mid" id="savings-label">Saving $21,000/yr vs. current</span>
+        <span>$39k saved</span>
+      </div>
+      <p class="slider-note" id="slider-note">Option A — Recommended. Art hub + headroom. Full AI suite included.</p>
+    </div>
+
+    <hr>
+
+    <p class="section-label">ROI at this contract value — dynamic</p>
+    <div class="roi-grid">
+      <div class="roi-card ol">
+        <div class="roi-lbl">Cost per ad created</div>
+        <div class="roi-num o" id="d-cpa">$648</div>
+        <div class="roi-sub" id="d-cpa-sub">Projected annual contract ÷ 456 ads/yr</div>
+      </div>
+      <div class="roi-card ol">
+        <div class="roi-lbl">Cost per export</div>
+        <div class="roi-num o" id="d-cpe">$64</div>
+        <div class="roi-sub" id="d-cpe-sub">Projected annual contract ÷ 1930 exports/yr</div>
+      </div>
+      <div class="roi-card hl">
+        <div class="roi-lbl">Savings vs. current deal</div>
+        <div class="roi-num g" id="d-save">$21,000</div>
+        <div class="roi-sub" id="d-save-sub">Redirected to media spend or headcount</div>
+      </div>
+      <div class="roi-card hl">
+        <div class="roi-lbl">vs. agency (annualised ads)</div>
+        <div class="roi-num g" id="d-agency">$827k+</div>
+        <div class="roi-sub" id="d-agency-sub">$950,000 agency cost − new contract value</div>
+      </div>
+    </div>
+
+    <hr>
+
+    <p class="section-label">Full pricing reference</p>
+    <div class="card">
+      <div id="pricing-table"></div>
+    </div>
   </div>
 </div>
 
@@ -177,35 +354,64 @@
     'Current structure. Maximum group-wide flexibility.',
   ];
   var CURRENT = 144000;
-  function fmt(n){return '$'+Math.round(n).toLocaleString();}
+  var ANN_ADS = 456, ANN_EXPORTS = 1930, AGENCY_AD = 5000;
+
+  function fmt(n) { return '$' + Math.round(n).toLocaleString(); }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelector('[onclick="switchTab('' + name + '')"]').classList.add('active');
+    document.getElementById('panel-' + name).classList.add('active');
+  }
+
   var tableEl = document.getElementById('pricing-table');
   var rows = [];
-  PRICING.forEach(function(tier,i){
-    var annual=tier.monthly*12, seatsNum=tier.seats===999?30:tier.seats, cps=Math.round(annual/seatsNum);
-    var row=document.createElement('div'); row.className='trow';
-    row.innerHTML='<span class="lbl">'+tier.label+'</span><span class="mid-txt">'+fmt(tier.monthly)+'/mo &nbsp;·&nbsp; '+fmt(annual)+'/yr</span><span class="val">'+fmt(cps)+'/seat/yr</span>';
+  PRICING.forEach(function(tier, i) {
+    var annual = tier.monthly * 12, seatsNum = tier.seats === 999 ? 30 : tier.seats;
+    var cps = Math.round(annual / seatsNum);
+    var row = document.createElement('div'); row.className = 'trow';
+    row.innerHTML = '<span class="lbl">' + tier.label + '</span>' +
+      '<span class="mid-txt">' + fmt(tier.monthly) + '/mo &nbsp;·&nbsp; ' + fmt(annual) + '/yr</span>' +
+      '<span class="val">' + fmt(cps) + '/seat/yr</span>';
     tableEl.appendChild(row); rows.push(row);
   });
-  function update(){
-    var idx=parseInt(document.getElementById('seat-slider').value)-1;
-    var tier=PRICING[idx], monthly=tier.monthly, annual=monthly*12;
-    var seatsNum=tier.seats===999?30:tier.seats;
-    var cpsMonthly=monthly/seatsNum, cpsAnnual=annual/seatsNum;
-    var saving=CURRENT-annual, maxSave=CURRENT-(PRICING[7].monthly*12);
-    var savePct=Math.max(0,Math.min(100,(saving/maxSave)*100));
-    document.getElementById('seat-label').textContent=tier.label;
-    document.getElementById('monthly-cost').textContent=fmt(monthly)+'/mo';
-    document.getElementById('monthly-sub').textContent=tier.label;
-    document.getElementById('annual-cost').textContent=fmt(annual)+'/yr';
-    document.getElementById('annual-sub').textContent=saving>0?'Saves '+fmt(saving)+' vs. current':'Same as current';
-    document.getElementById('cps-result').textContent=(tier.seats===999?'~':'')+fmt(cpsAnnual);
-    document.getElementById('cps-sub').textContent=(tier.seats===999?'~':'')+fmt(cpsMonthly)+' / seat / mo';
-    document.getElementById('savings-fill').style.width=Math.max(0,savePct)+'%';
-    document.getElementById('savings-label').textContent=saving>0?'Saving '+fmt(saving)+'/yr vs. current':'No change from current';
-    document.getElementById('slider-note').textContent=NOTES[idx]||'';
-    rows.forEach(function(r,i){r.classList.toggle('active',i===idx);});
+
+  function update() {
+    var idx = parseInt(document.getElementById('seat-slider').value) - 1;
+    var tier = PRICING[idx], monthly = tier.monthly, annual = monthly * 12;
+    var seatsNum = tier.seats === 999 ? 30 : tier.seats;
+    var saving = CURRENT - annual;
+    var maxSave = CURRENT - (PRICING[7].monthly * 12);
+    var savePct = Math.max(0, Math.min(100, (saving / maxSave) * 100));
+    var cpaNew = Math.round(annual / ANN_ADS);
+    var cpeNew = Math.round(annual / ANN_EXPORTS);
+    var agencySave = (AGENCY_AD * ANN_ADS) - annual;
+
+    document.getElementById('seat-label').textContent = tier.label;
+    document.getElementById('monthly-cost').textContent = fmt(monthly) + '/mo';
+    document.getElementById('monthly-sub').textContent = tier.label;
+    document.getElementById('annual-cost').textContent = fmt(annual) + '/yr';
+    document.getElementById('annual-sub').textContent = saving > 0 ? 'Saves ' + fmt(saving) + ' vs. current' : 'Same as current';
+    document.getElementById('cps-result').textContent = (tier.seats===999?'~':'') + fmt(annual/seatsNum);
+    document.getElementById('cps-sub').textContent = (tier.seats===999?'~':'') + fmt(monthly/seatsNum) + ' / seat / mo';
+    document.getElementById('savings-fill').style.width = Math.max(0, savePct) + '%';
+    document.getElementById('savings-label').textContent = saving > 0 ? 'Saving ' + fmt(saving) + '/yr vs. current' : 'No change from current';
+    document.getElementById('slider-note').textContent = NOTES[idx] || '';
+
+    document.getElementById('d-cpa').textContent = fmt(cpaNew);
+    document.getElementById('d-cpa-sub').textContent = fmt(annual) + ' ÷ ' + ANN_ADS + ' projected ads/yr';
+    document.getElementById('d-cpe').textContent = fmt(cpeNew);
+    document.getElementById('d-cpe-sub').textContent = fmt(annual) + ' ÷ ' + ANN_EXPORTS.toLocaleString() + ' projected exports/yr';
+    document.getElementById('d-save').textContent = saving > 0 ? fmt(saving) : '$0';
+    document.getElementById('d-save-sub').textContent = saving > 0 ? fmt(saving) + ' redirected to media or headcount' : 'Same as current contract';
+    document.getElementById('d-agency').textContent = fmt(agencySave) + '+';
+    document.getElementById('d-agency-sub').textContent = fmt(AGENCY_AD * ANN_ADS) + ' agency cost − ' + fmt(annual);
+
+    rows.forEach(function(r, i) { r.classList.toggle('active', i === idx); });
   }
-  document.getElementById('seat-slider').addEventListener('input',update);
+
+  document.getElementById('seat-slider').addEventListener('input', update);
   update();
 </script>
 </body>
