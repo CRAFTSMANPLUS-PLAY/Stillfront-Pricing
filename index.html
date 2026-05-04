@@ -345,7 +345,14 @@
 <script>
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
 var ADS = 190, EXPORTS = 804, SEAT_VALUE = 36500, CURRENT_ARR = 144000;
-var ANN_ADS = 456, ANN_EXPORTS = 1930, AGENCY_AD = 5000;
+var AGENCY_AD = 5000;
+// Productivity per seat derived from actuals:
+// 15 active users → 190 ads + 804 exports over 5 months
+// = 30.4 ads/user/yr · 128.6 exports/user/yr (rounded to clean numbers)
+var ADS_PER_SEAT_YR = 30;
+var EXPORTS_PER_SEAT_YR = 129;
+// Fixed baseline for ROI tab (actual 5-month output, not seat-scaled)
+var ANN_ADS = 456, ANN_EXPORTS = 1930;
 
 var PRICING = [
   {seats:1,monthly:2500,label:'1 seat'},{seats:2,monthly:3500,label:'2 seats'},
@@ -453,17 +460,24 @@ PRICING.forEach(function(tier) {
 });
 
 function updateSlider() {
-  var idx     = parseInt(document.getElementById('seat-slider').value) - 1;
-  var tier    = PRICING[idx];
-  var monthly = tier.monthly;
-  var annual  = monthly * 12;
+  var idx      = parseInt(document.getElementById('seat-slider').value) - 1;
+  var tier     = PRICING[idx];
+  var monthly  = tier.monthly;
+  var annual   = monthly * 12;
   var seatsNum = tier.seats === 999 ? 30 : tier.seats;
-  var saving  = CURRENT_ARR - annual;
-  var maxSave = CURRENT_ARR - (PRICING[7].monthly * 12);
-  var savePct = Math.max(0, Math.min(100, (saving / maxSave) * 100));
-  var cpaNew  = Math.round(annual / ANN_ADS);
-  var cpeNew  = Math.round(annual / ANN_EXPORTS);
-  var agSave  = (AGENCY_AD * ANN_ADS) - annual;
+  var saving   = CURRENT_ARR - annual;
+  var maxSave  = CURRENT_ARR - (PRICING[7].monthly * 12);
+  var savePct  = Math.max(0, Math.min(100, (saving / maxSave) * 100));
+
+  // ── Seat-scaled productivity ──────────────────────────────────────────────
+  // More seats = more users = more output = lower cost per unit.
+  // Based on actuals: 15 users → 190 ads + 804 exports in 5 months
+  // = 30 ads/user/yr · 129 exports/user/yr
+  var projAds     = seatsNum * ADS_PER_SEAT_YR;
+  var projExports = seatsNum * EXPORTS_PER_SEAT_YR;
+  var cpaNew      = Math.round(annual / projAds);
+  var cpeNew      = Math.round(annual / projExports);
+  var agSave      = (AGENCY_AD * projAds) - annual;
 
   document.getElementById('seat-label').textContent    = tier.label;
   document.getElementById('monthly-cost').textContent  = fmt(monthly) + '/mo';
@@ -476,14 +490,14 @@ function updateSlider() {
   document.getElementById('savings-label').textContent = saving > 0 ? 'Saving ' + fmt(saving) + '/yr vs. current' : 'No change from current';
   document.getElementById('slider-note').textContent   = NOTES[idx] || '';
 
-  document.getElementById('d-cpa').textContent      = fmt(cpaNew);
-  document.getElementById('d-cpa-sub').textContent  = fmt(annual) + ' ÷ ' + ANN_ADS + ' projected ads/yr';
-  document.getElementById('d-cpe').textContent      = fmt(cpeNew);
-  document.getElementById('d-cpe-sub').textContent  = fmt(annual) + ' ÷ ' + ANN_EXPORTS.toLocaleString() + ' projected exports/yr';
-  document.getElementById('d-save').textContent     = saving > 0 ? fmt(saving) : '$0';
-  document.getElementById('d-save-sub').textContent = saving > 0 ? fmt(saving) + ' redirected to media or headcount' : 'Same as current contract';
-  document.getElementById('d-agency').textContent   = fmt(agSave) + '+';
-  document.getElementById('d-agency-sub').textContent = fmt(AGENCY_AD * ANN_ADS) + ' agency cost − ' + fmt(annual);
+  document.getElementById('d-cpa').textContent         = fmt(cpaNew);
+  document.getElementById('d-cpa-sub').textContent     = fmt(annual) + ' ÷ ' + projAds + ' projected ads/yr (' + seatsNum + ' seats × 30 ads/user)';
+  document.getElementById('d-cpe').textContent         = fmt(cpeNew);
+  document.getElementById('d-cpe-sub').textContent     = fmt(annual) + ' ÷ ' + projExports.toLocaleString() + ' projected exports/yr (' + seatsNum + ' seats × 129 exports/user)';
+  document.getElementById('d-save').textContent        = saving > 0 ? fmt(saving) : '$0';
+  document.getElementById('d-save-sub').textContent    = saving > 0 ? fmt(saving) + ' redirected to media or headcount' : 'Same as current contract';
+  document.getElementById('d-agency').textContent      = agSave > 0 ? fmt(agSave) + '+' : '—';
+  document.getElementById('d-agency-sub').textContent  = fmt(AGENCY_AD * projAds) + ' agency cost − ' + fmt(annual);
 
   pricingRows.forEach(function(r, i) { r.classList.toggle('active', i === idx); });
 }
